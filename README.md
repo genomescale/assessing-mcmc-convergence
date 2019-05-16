@@ -15,7 +15,7 @@ chains, meaning that the probability density being sampled by the turquoise
 chain is over 600 times greater than what is being sampled by the gold
 chain!
 
-However I will show that in fact neither chain has converged.
+In reality, I will show that in fact neither chain has converged.
 
 ## Probability distribution parameters
 
@@ -29,7 +29,7 @@ Because the Gaussians are placed some distance apart, this creates two modes
 which divide the probability mass of the mixture. As we made the split 50/50,
 if the probability distribution happens to be a posterior distribution, we are
 ~50% certain that the truth lies within the larger mode, and ~50% certain that
-it lies within the smaller mode.
+it lies within the smaller mode, conditioned on whatever model is being used.
 
 Using the `random_samples.R` script I drew 1000 independent samples from this
 mixture, so you can see the two modes:
@@ -44,7 +44,7 @@ a higher probability density, as mass divided by volume equals density!
 ## MCMC sampling
 
 The turquoise and gold traces were generated using a simple MCMC algorithm
-implemented in `mcmc_demo.py`. This script is called as `mcmc_demo.py <filename>`
+implemented in `mcmc_demo.py`. This script is called as `python3 mcmc_demo.py <filename>`
 where the filename to log the trace is the first argument. The algorithm
 works as follows:
 
@@ -62,9 +62,8 @@ samples.
 
 I ran ten of these chains, each given a filename of the pattern
 `demo_trace_N.tsv`. For each trace I ran the script `plot_trace.R` with is
-called like `plot_trace.R demo_trace_N`. This script reads in a trace file and
-outputs a plot of the MCMC samples with their log probability densities
-as a png. Foimages/ur of the chains, e.g. `demo_trace_0`, only explored the large
+called like `Rscript plot_trace.R demo_trace_N`. This script reads in a trace file and
+outputs a plot of the MCMC samples with their log probability densities. Four of the chains, e.g. `demo_trace_0`, only explored the large
 mode:
 
 ![alt text](images/demo_trace_0.png "demo trace 0 posterior samples.")
@@ -102,9 +101,9 @@ respectively... however the differences are more extreme. The standard
 deviation for the log probability was approximately 1.6 for all chains, but
 the difference in means was roughly 11 log units. This means that the log
 probabilities of the chains in the large mode were almost 7 standard
-deviations separated from chains in the small mode! That's 1000 times less
-probability density! Clearly as we increase the dimensionality, this pathology
-only gets worse.
+deviations separated from chains in the small mode! And the difference in
+means corresponds to 1000 times less probability density! Clearly as we
+increase the dimensionality, this pathology only gets worse.
 
 ## Achieving convergence
 
@@ -124,7 +123,7 @@ coordinates all by the same delta. For example in the three taxon case, we
 might change *x* alone, or *y* and *z* together, or *x*, *y* and *z*
 simultaneously. Also, we double the standard deviation of the proposal
 distribution used to generate delta from 3 to 6. To run the improved method,
-call the MCMC script with the arguments `mcmc_demo.py 2 <filename>`.
+call the MCMC script with "2" as the first argument: `python3 mcmc_demo.py 2 <filename>`.
 
 Using the improved algorithm, every chain was able to switch between modes.
 ESS values for individual chains were all below 100, but by concatenating
@@ -132,10 +131,10 @@ the traces of ten chains we can reach ESS values above 200:
 
 ![alt text](images/concatenated_improved_trace.png "MCMC trace using an improved algorithm.")
 
-This improved algorithm was not able to switch between modes when used with
-five parameters, This is not surprising as convergence gets harder to achieve
-with more dimensions, illustrating the difficulty faced by developers of very
-highly dimensional phylogenetic methods.
+This improved algorithm was not able to switch between modes when applied to
+the five parameter analysis. This is not surprising as convergence gets harder
+to achieve with more dimensions, illustrating the difficulty faced by
+developers of very highly dimensional phylogenetic methods.
 
 ## Final note
 
