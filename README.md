@@ -51,16 +51,80 @@ works as follows:
   6. With probability *A*, replace *p* and (*x*, *y*, *z*) with *p'* and the proposed coordinates
   7. Go to 3 until a stopping condition is met
 
-The log probability density and coordinates for every 100th iteration is
-logged and the chain is run for 100,000 iterations in total, for a total of
-1,000 samples.
+The log probability density and coordinates are recorded for every 100th
+iteration, and chains are run for 100,000 iterations, for a total of 1,000
+samples.
 
-When I ran ten chains (available here, and given filenames of the pattern
-`demo_trace_N.tsv`), six explored the narrow mode (like the turquoise chain)
-and four explored the broad mode (like the gold chain), and of them ever
-switched between the two modes. The standard deviation for the log probability
-was approximately 1.2 for all chains. Since the difference in means was
-roughly 6.5 log units, the log probabilities of chains in the broad mode were
-roughly 5.4 standard deviations separated from chains in the narrow mode.
+I ran ten of these chains, each given a filename of the pattern
+`demo_trace_N.tsv`. For each trace I ran the script `plot_trace.R` with is
+called like `plot_trace.R demo_trace_N`. This script reads in a tsv file and
+outputs a plot of the log probability densities as a png. Four of the chains,
+e.g. `demo_trace_0`, only explored the broad mode:
 
+![alt text](demo_trace_0.png "demo trace 0 posterior samples.")
 
+While six of the chains, e.g. `demo_trace_1`, only explored the narrow mode:
+
+![alt text](demo_trace_1.png "demo trace 1 posterior samples.")
+
+The standard deviation for the log probability was approximately 1.2 for all
+chains. Since the difference in means was roughly 6.5 log units, the log
+probabilities of chains in the broad mode were roughly 5.4 standard deviations
+separated from chains in the narrow mode.
+
+## Increasing dimensionality
+
+Bayesian multispecies coalescent (MSC) and multispecies network coalescent
+(MSNC) methods are used to infer thousands or even more parameters in a given
+analysis. For example, given a 101 taxon species tree, 99 gene trees, and one
+allele sampled per locus per species, there will be 100 internal nodes times
+100 trees - this means 10,000 node heights must be estimated! Then we must
+also consider the other parameters like population sizes, tree topologies,
+substitution model parameters and so on.
+
+However so far we have only been inferring three parameters. What happens if
+we increase the number of parameters, but leave everything else the same? I
+implemented the MCMC algorithm for five parameters as the `mcmc_5.py` script.
+The filenames of the traces are of the pattern `demo5_trace_N.tsv`. Opening
+these in [Tracer](http://beast.community/tracer) revealed a similar trend to
+the three parameter case:
+
+![alt text](example5_traces.png "MCMC traces of five parameter analyses with high and low probability densities.")
+
+However the differences are more extreme. The standard deviation for the log
+probability was approximately 1.6 for all chains, but the difference in means
+was roughly 11 log units. This means that the log probabilities of the chains
+in the broad mode were almost 7 standard deviations separated from chains in
+the narrow mode! Clearly as we increase the dimensionality, this pathology
+only gets worse.
+
+## Achieving convergence
+
+The two most obvious ways to overcome this pathology when using MCMC for a
+Bayesian phylogenetic analysis are:
+
+1. Reduce the size of the dataset to flatten the posterior distribution
+2. Improve the MCMC algorithm so it can switch between modes
+
+The first suggestion disappoints users, and the second suggestion requires
+developers to invest a lot of time they may not have. However for my toy
+example we can fairly easily improve it by changing the proposal in step 3 of
+the algorithm.
+
+Rather than changing a single coordinate, we change a random subset of the
+coordinates all by the same delta. For example in the three taxon case, we
+might change *x* alone, or *y* and *z* together, or *x*, *y* and *z*
+simultaneously. Also, we double the standard deviation of the proposal
+distribution used to generate delta from 3 to 6. To run the improved method,
+call the MCMC script with the arguments `mcmc_demo.py 2 <filename>`.
+
+Using the improved algorithm, every chain was able to switch between modes.
+ESS values for individual chains were all below 100, but by concatenating
+the traces of ten chains we can reach ESS values above 200:
+
+![alt text](concatenated_improved_trace.png "MCMC trace using an improved algorithm.")
+
+This improved algorithm was not able to switch between modes when used with
+five parameters, This is not surprising as convergence gets harder to achieve
+with more dimensions, illustrating the difficulty faced by developers of very
+highly dimensional phylogenetic methods.

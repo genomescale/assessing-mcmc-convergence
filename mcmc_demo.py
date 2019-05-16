@@ -31,7 +31,7 @@ def proposal2(coordinates, scale):
 	n_to_change = numpy.random.randint(n_coordinates) + 1
 	i_to_change = numpy.random.choice(n_coordinates, size = n_to_change, replace = False)
 
-	delta = numpy.random.normal() * scale
+	delta = numpy.random.normal() * scale * 2.0
 
 	proposed_coordinates = numpy.copy(coordinates)
 
