@@ -20,16 +20,16 @@ However I will show that in fact neither chain has converged.
 ## Probability distribution parameters
 
 In this case, we are sampling from a three-dimensional probability
-distribution which is a 50/50 mixture of two circular-symmetric multivariate
+distribution which is a 50/50 mixture of two circularly symmetric multivariate
 Gaussians. The mean and standard deviation of each coordinate for the first
 (large) Gaussian are 12 and 3 respectively, and for the second (small)
-Gaussian are 25 and 1/3.
+Gaussian they are 25 and 1/3.
 
 Because the Gaussians are placed some distance apart, this creates two modes
-which share roughly equally the probability mass of the mixture.
-If the probability distribution happens to be a posterior distribution, this
-means that we are ~50% certain that the truth lies within the largeer mode,
-and ~50% certain that it lies within the smaller mode.
+which divide the probability mass of the mixture. As we made the split 50/50,
+if the probability distribution happens to be a posterior distribution, we are
+~50% certain that the truth lies within the larger mode, and ~50% certain that
+it lies within the smaller mode.
 
 Using the `random_samples.R` script I drew 1000 independent samples from this
 mixture, so you can see the two modes:
@@ -38,7 +38,7 @@ mixture, so you can see the two modes:
 
 What has occured above is that the turquoise chain is only exploring the
 small mode, and the gold chain is only exploring the large mode. Because the
-probability mass of each mode is roughly equal, the smaller node *must* have
+probability mass of each mode is roughly equal, the smaller mode *must* have
 a higher probability density, as mass divided by volume equals density!
 
 ## MCMC sampling
@@ -62,9 +62,10 @@ samples.
 
 I ran ten of these chains, each given a filename of the pattern
 `demo_trace_N.tsv`. For each trace I ran the script `plot_trace.R` with is
-called like `plot_trace.R demo_trace_N`. This script reads in a tsv file and
-outputs a plot of the log probability densities as a png. Four of the chains,
-e.g. `demo_trace_0`, only explored the large mode:
+called like `plot_trace.R demo_trace_N`. This script reads in a trace file and
+outputs a plot of the MCMC samples with their log probability densities
+as a png. Four of the chains, e.g. `demo_trace_0`, only explored the large
+mode:
 
 ![alt text](demo_trace_0.png "demo trace 0 posterior samples.")
 
@@ -72,7 +73,7 @@ While six of the chains, e.g. `demo_trace_1`, only explored the small mode:
 
 ![alt text](demo_trace_1.png "demo trace 1 posterior samples.")
 
-The standard deviation for the log probability was approximately 1.2 for all
+The standard deviation of the log probability was approximately 1.2 for all
 chains. Since the difference in means was roughly 6.5 log units, the log
 probabilities of chains in the large mode were roughly 5.4 standard deviations
 separated from chains in the small mode.
@@ -82,25 +83,27 @@ separated from chains in the small mode.
 Bayesian multispecies coalescent (MSC) and multispecies network coalescent
 (MSNC) methods are used to infer thousands or even more parameters in a given
 analysis. For example, given a 101 taxon species tree, 99 gene trees, and one
-allele sampled per locus per species, there will be 100 internal nodes times
-100 trees - this means 10,000 node heights must be estimated! Then we must
-also consider the other parameters like population sizes, tree topologies,
+allele sampled per locus per species, there will be 100 internal nodes for each
+of the 100 trees - this means 10,000 node heights must be estimated! Then we must
+consider all the other parameters like population sizes, tree topologies,
 substitution model parameters and so on.
 
 However so far we have only been inferring three parameters. What happens if
 we increase the number of parameters, but leave everything else the same? I
-implemented the MCMC algorithm for five parameters as the `mcmc_5.py` script.
-The filenames of the traces are of the pattern `demo5_trace_N.tsv`. Opening
-these in [Tracer](http://beast.community/tracer) revealed a similar trend to
-the three parameter case:
+tweaked the implementation to estimate five parameters, and this script has
+the filename `mcmc_5.py`. The filenames of the traces are of the pattern
+`demo5_trace_N.tsv`. Opening these in [Tracer](http://beast.community/tracer)
+revealed a trend similar to the three parameter case:
 
 ![alt text](example5_traces.png "MCMC traces of five parameter analyses with high and low probability densities.")
 
-However the differences are more extreme. The standard deviation for the log
-probability was approximately 1.6 for all chains, but the difference in means
-was roughly 11 log units. This means that the log probabilities of the chains
-in the large mode were almost 7 standard deviations separated from chains in
-the small mode! Clearly as we increase the dimensionality, this pathology
+With the green and red chains exploring the smaller and larger modes
+respectively... however the differences are more extreme. The standard
+deviation for the log probability was approximately 1.6 for all chains, but
+the difference in means was roughly 11 log units. This means that the log
+probabilities of the chains in the large mode were almost 7 standard
+deviations separated from chains in the small mode! That's 1000 times less
+probability density! Clearly as we increase the dimensionality, this pathology
 only gets worse.
 
 ## Achieving convergence
@@ -108,7 +111,7 @@ only gets worse.
 The two most obvious ways to overcome this pathology when using MCMC for a
 Bayesian phylogenetic analysis are:
 
-1. Reduce the size of the dataset to flatten the posterior distribution
+1. Reduce the size of the dataset to smooth out the posterior distribution
 2. Improve the MCMC algorithm so it can switch between modes
 
 The first suggestion disappoints users, and the second suggestion requires
@@ -133,3 +136,9 @@ This improved algorithm was not able to switch between modes when used with
 five parameters, This is not surprising as convergence gets harder to achieve
 with more dimensions, illustrating the difficulty faced by developers of very
 highly dimensional phylogenetic methods.
+
+## Final note
+
+Left as an exercise for the reader is to consider what this means for the
+validity of using the maximum *a posteriori* sample, maximum likelihood
+results... or indeed any point estimate.
