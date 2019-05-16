@@ -10,9 +10,9 @@ independent chains, both sampling from the same probability distribution:
 Which chain has converged? It seems intuitive that the chain with the higher
 log probability density has converged and is sampling from the stationary
 distribution, whereas the chain with the lower posterior density has failed to
-do so. After all, there is roughly 5.5 log units between the means of the two
+do so. After all, there is roughly 6.5 log units between the means of the two
 chains, meaning that the probability density being sampled by the turquoise
-chain is roughly 250 times greater than what is being sampled by the gold
+chain is over 600 times greater than what is being sampled by the gold
 chain!
 
 However I will show that in fact neither chain has converged.
@@ -28,7 +28,7 @@ Gaussian are 25 and 1/3.
 Because the Gaussians are placed some distance apart, this creates two modes
 which share roughly equally the probability mass of the mixture. If the
 probability distribution happens to be a posterior distribution, this means
-that we are 50% certain that the truth lies within the broader mode, and 50%
+that we are ~50% certain that the truth lies within the broader mode, and ~50%
 certain that it lies within the narrower mode.
 
 Using the `random_samples.R` script I drew 1000 independent samples from this
@@ -48,9 +48,19 @@ works as follows:
   3. Propose changing one coordinate by delta ~ Normal(0, 3)
   4. Calculate the probability density *p'* of the proposed coordinates
   5. Calculate the acceptance probability *A* = max(1, *p'* / *p*)
-  6. With probability *A*, replace *p* and (*x*, *y*, *z*) with the proposed probability density and coordinates
+  6. With probability *A*, replace *p* and (*x*, *y*, *z*) with *p'* and the proposed coordinates
   7. Go to 3 until a stopping condition is met
 
 The log probability density and coordinates for every 100th iteration is
 logged and the chain is run for 100,000 iterations in total, for a total of
 1,000 samples.
+
+When I ran ten chains (available here, and given filenames of the pattern
+`demo_trace_N.tsv`), six explored the narrow mode (like the turquoise chain)
+and four explored the broad mode (like the gold chain), and of them ever
+switched between the two modes. The standard deviation for the log probability
+was approximately 1.2 for all chains. Since the difference in means was
+roughly 6.5 log units, the log probabilities of chains in the broad mode were
+roughly 5.4 standard deviations separated from chains in the narrow mode.
+
+
