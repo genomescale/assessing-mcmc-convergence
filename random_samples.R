@@ -35,6 +35,6 @@ mixture_samples_df$log_density = log(sample_densities)
 
 png(filename = "random_samples.png", width = 1280, height = 960, pointsize = 24)
 
-scatter3D(mixture_samples_df$x, mixture_samples_df$y, mixture_samples_df$z, colvar = mixture_samples_df$log_density, xlim = c(0, 30), ylim = c(0, 30), zlim = c(0, 30), clim = c(-25, 0), clab = "log density", ticktype = "detailed")
+scatter3D(mixture_samples_df$x, mixture_samples_df$y, mixture_samples_df$z, colvar = mixture_samples_df$log_density, xlim = c(0, 30), ylim = c(0, 30), zlim = c(0, 30), clim = c(-20, 0), clab = "log density", ticktype = "detailed")
 
 dev.off()
