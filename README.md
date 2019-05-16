@@ -5,7 +5,7 @@
 Consider the following MCMC traces showing the log probability density from two
 independent chains, both sampling from the same probability distribution:
 
-![alt text](example_traces.png "MCMC traces with high and low probability densities.")
+![alt text](images/example_traces.png "MCMC traces with high and low probability densities.")
 
 Which chain has converged? It seems intuitive that the chain with the higher
 log probability density has converged and is sampling from the stationary
@@ -34,7 +34,7 @@ it lies within the smaller mode.
 Using the `random_samples.R` script I drew 1000 independent samples from this
 mixture, so you can see the two modes:
 
-![alt text](random_samples.png "The bimodal mixture distribution.")
+![alt text](images/random_samples.png "The bimodal mixture distribution.")
 
 What has occured above is that the turquoise chain is only exploring the
 small mode, and the gold chain is only exploring the large mode. Because the
@@ -64,14 +64,14 @@ I ran ten of these chains, each given a filename of the pattern
 `demo_trace_N.tsv`. For each trace I ran the script `plot_trace.R` with is
 called like `plot_trace.R demo_trace_N`. This script reads in a trace file and
 outputs a plot of the MCMC samples with their log probability densities
-as a png. Four of the chains, e.g. `demo_trace_0`, only explored the large
+as a png. Foimages/ur of the chains, e.g. `demo_trace_0`, only explored the large
 mode:
 
-![alt text](demo_trace_0.png "demo trace 0 posterior samples.")
+![alt text](images/demo_trace_0.png "demo trace 0 posterior samples.")
 
 While six of the chains, e.g. `demo_trace_1`, only explored the small mode:
 
-![alt text](demo_trace_1.png "demo trace 1 posterior samples.")
+![alt text](images/demo_trace_1.png "demo trace 1 posterior samples.")
 
 The standard deviation of the log probability was approximately 1.2 for all
 chains. Since the difference in means was roughly 6.5 log units, the log
@@ -95,7 +95,7 @@ the filename `mcmc_5.py`. The filenames of the traces are of the pattern
 `demo5_trace_N.tsv`. Opening these in [Tracer](http://beast.community/tracer)
 revealed a trend similar to the three parameter case:
 
-![alt text](example5_traces.png "MCMC traces of five parameter analyses with high and low probability densities.")
+![alt text](images/example5_traces.png "MCMC traces of five parameter analyses with high and low probability densities.")
 
 With the green and red chains exploring the smaller and larger modes
 respectively... however the differences are more extreme. The standard
@@ -130,7 +130,7 @@ Using the improved algorithm, every chain was able to switch between modes.
 ESS values for individual chains were all below 100, but by concatenating
 the traces of ten chains we can reach ESS values above 200:
 
-![alt text](concatenated_improved_trace.png "MCMC trace using an improved algorithm.")
+![alt text](images/concatenated_improved_trace.png "MCMC trace using an improved algorithm.")
 
 This improved algorithm was not able to switch between modes when used with
 five parameters, This is not surprising as convergence gets harder to achieve
